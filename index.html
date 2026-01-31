@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Simulação de Financiamento</title>
+    <title>Simulação de Financiamento - Roger Oliveira</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { --p: #0056b3; --w: #25D366; --b: #f4f4f9; --wh: #ffffff; --t: #333333; --e: #d9534f; --g: #6c757d; }
@@ -16,7 +16,6 @@
             padding: 10px; 
             display: flex; 
             justify-content: center; 
-            /* Ajuste para mobile: Alinha ao topo para o teclado não tampar o formulário */
             align-items: flex-start; 
             min-height: 100vh; 
             color: var(--t); 
@@ -33,7 +32,6 @@
             display: flex; 
             flex-direction: column; 
             position: relative; 
-            /* Margem superior para não colar no limite da tela */
             margin-top: 10px; 
         }
 
@@ -217,7 +215,6 @@ function nextStep(c) {
         const ano = parseInt(_g('air').value);
         const agora = new Date();
         if (ano > agora.getFullYear()) { _showErrIR("O ano não pode ser no futuro."); return; }
-        if (ano === agora.getFullYear() && agora.getMonth() + 1 < 3) { _showErrIR(`O período de declaração de ${agora.getFullYear()} ainda não começou.`); return; }
         _g('err-ir').style.display = 'none';
     }
     if (c === 6 && _g('ent').value !== "R$ 0,00" && _g('ent').value === _g('fgts').value) {
@@ -225,7 +222,7 @@ function nextStep(c) {
     }
     _g(`step${c}`).classList.remove('active');
     _g(`step${c + 1}`).classList.add('active');
-    window.scrollTo(0,0); // Garante que a nova tela abra no topo
+    window.scrollTo(0,0);
 }
 
 function _showErrIR(msg) { const e = _g('err-ir'); e.innerText = msg; e.style.display = 'block'; }
@@ -237,7 +234,7 @@ function handleECChange() {
         "Solteiro(a)": "Confirma que não possui divórcio anterior? <br><br> <label>Comprar sozinho?</label><select id='cs'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>",
         "Casado(a)": "Possui cópia da Certidão de Casamento?<select id='sub_q'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>",
         "Separado(a)": "Separação averbada na Certidão?<select id='sub_q'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>",
-        "Divorciado(a)": "Divórcio averbado na Certidão?<select id='sub_q'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>",
+        "Divorciado(a)": "Divórcio averbada na Certidão?<select id='sub_q'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>",
         "Viúvo(a)": "Viuvez averbada na Certidão?<select id='sub_q'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>",
         "União Estável": "Possui documento da união?<select id='sub_q'><option value='Sim'>Sim</option><option value='Não'>Não</option></select>"
     };
@@ -254,7 +251,8 @@ function _zRun() {
         r: _g("rnd").value, t: _g("tr").value, ir: _g("dir").value, a: _g("air").value || "--",
         f: _g("fgts").value, e: _g("ent").value, tf: _g("tfg").value, dv: _g("div").value, h: new Date().toLocaleDateString("pt-BR")
     };
-    _pG(d); _wS(d);
+    _pG(d); 
+    _wS(d);
 }
 
 function _pG(o) {
@@ -284,7 +282,7 @@ function _pG(o) {
     doc.setFontSize(11); doc.text("Creci-MG 45.117 | (31) 93618-0070", 105, 271, { align: "center" });
     doc.setFontSize(8); doc.setFont("helvetica", "italic");
     doc.text("Este documento possui dados para realização de uma simulação preliminar,", 105, 280, { align: "center" });
-    doc.text("onde somente uma análise efetiva pelo banco pode surtir (ou não) em uma aprovação de crédito.", 105, 285, { align: "center" });
+    doc.text("análise sujeita a aprovação bancária.", 105, 285, { align: "center" });
     doc.save(`Simulacao_Roger.pdf`);
 }
 
@@ -295,12 +293,24 @@ function _wS(o) {
         `*👤 Nascimento:* ${o.n}\n*💍 Estado Civil:* ${o.c}\n*📑 Adicional:* ${o.sub}\n\n` +
         `*💰 Renda:* ${o.r} (${o.t})\n*📁 IR:* ${o.ir} (Ano: ${o.a})\n\n` +
         `*🏦 FGTS:* ${o.f} (+3 anos: ${o.tf})\n*💵 Entrada:* ${o.e}\n*⚠️ Dívidas:* ${o.dv}\n\n` +
-        `_Este documento possui dados para realização de uma simulação preliminar, onde somente uma análise efetiva pelo banco pode surtir (ou não) em uma aprovação de crédito._`
+        `_Este documento possui dados para realização de uma simulação preliminar, sujeita a análise bancária._`
     );
-    const waUrl = `https://web.whatsapp.com/send?phone=${ph}&text=${msg}`;
-    const fallbackUrl = `https://wa.me/${ph}?text=${msg}`;
-    const win = window.open(waUrl, "_blank");
-    if (!win || win.closed || typeof win.closed === 'undefined') { window.location.href = fallbackUrl; }
+
+    // IDENTIFICAÇÃO DE DISPOSITIVO
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // URL DINÂMICA: wa.me abre o APP no mobile; web.whatsapp abre o navegador no PC
+    const finalUrl = isMobile 
+        ? `https://wa.me/${ph}?text=${msg}` 
+        : `https://web.whatsapp.com/send?phone=${ph}&text=${msg}`;
+
+    // Tenta abrir em nova aba
+    const win = window.open(finalUrl, "_blank");
+
+    // Fallback caso o pop-up seja bloqueado ou falhe
+    if (!win || win.closed || typeof win.closed === 'undefined') { 
+        window.location.href = finalUrl; 
+    }
 }
 </script>
 </body>
