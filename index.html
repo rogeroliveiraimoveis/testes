@@ -8,8 +8,35 @@
     <style>
         :root { --p: #0056b3; --w: #25D366; --b: #f4f4f9; --wh: #ffffff; --t: #333333; --e: #d9534f; --g: #6c757d; }
         * { box-sizing: border-box; outline: 0; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, system-ui, sans-serif; background-color: var(--b); margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--t); }
-        .c { background: var(--wh); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.08); width: 100%; max-width: 450px; min-height: 420px; display: flex; flex-direction: column; position: relative; }
+        
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            background-color: var(--b); 
+            margin: 0; 
+            padding: 10px; 
+            display: flex; 
+            justify-content: center; 
+            /* Ajuste para mobile: Alinha ao topo para o teclado não tampar o formulário */
+            align-items: flex-start; 
+            min-height: 100vh; 
+            color: var(--t); 
+        }
+
+        .c { 
+            background: var(--wh); 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,.08); 
+            width: 100%; 
+            max-width: 450px; 
+            min-height: 420px; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            /* Margem superior para não colar no limite da tela */
+            margin-top: 10px; 
+        }
+
         h2 { text-align: center; margin: 0 0 20px 0; font-size: 1.1rem; color: #222; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 15px; }
         .step { display: none; flex-direction: column; animation: fadeIn 0.3s ease; }
         .step.active { display: flex; }
@@ -138,7 +165,7 @@
             <div class="footer-info">
                 <strong>Consultor: Roger Oliveira</strong><br>
                 Creci-MG 45.117 – WhatsApp (31) 93618-0070<br>
-                <span style="color:var(--w); font-weight: bold;">✔ Envio Seguro</span>
+                <span style="color:var(--w); font-weight: bold;">✔ Canal de Envio Seguro</span>
                 <div class="legal-notice">Este documento possui dados para realização de uma simulação preliminar.</div>
             </div>
             <div class="page-indicator">Página 7 de 7</div>
@@ -147,7 +174,7 @@
 </div>
 
 <script>
-// --- PROTEÇÃO DE CÓDIGO ---
+// --- PROTEÇÃO ---
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('keydown', function(e) {
     if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) {
@@ -157,7 +184,7 @@ document.addEventListener('keydown', function(e) {
 
 const _g = (id) => document.getElementById(id);
 
-// --- MÁSCARAS E VALIDAÇÃO ---
+// --- MÁSCARAS ---
 function _mDt(v) {
     let x = v.value.replace(/\D/g, "");
     if (x.length > 2) x = x.replace(/^(\d{2})(\d)/, "$1/$2");
@@ -198,10 +225,11 @@ function nextStep(c) {
     }
     _g(`step${c}`).classList.remove('active');
     _g(`step${c + 1}`).classList.add('active');
+    window.scrollTo(0,0); // Garante que a nova tela abra no topo
 }
 
 function _showErrIR(msg) { const e = _g('err-ir'); e.innerText = msg; e.style.display = 'block'; }
-function prevStep(c) { _g(`step${c}`).classList.remove('active'); _g(`step${c - 1}`).classList.add('active'); }
+function prevStep(c) { _g(`step${c}`).classList.remove('active'); _g(`step${c - 1}`).classList.add('active'); window.scrollTo(0,0); }
 
 function handleECChange() {
     const ec = _g('ec').value;
